@@ -1,7 +1,6 @@
 import { expect, Locator, Page } from "@playwright/test";
 import { BasePage } from "./BasePage";
 class RegistrationPage extends BasePage {
-    private readonly registerlink: Locator;
     private readonly radiobutton:Locator;
     private readonly firstnameInput:Locator;
     private readonly lastnameInput: Locator;
@@ -15,7 +14,6 @@ class RegistrationPage extends BasePage {
 
 constructor(page:Page){
     super(page);
-    this.registerlink = page.getByText("Register");
     this.radiobutton = page.getByRole("radio", {name: "Male",exact: true});
     this.firstnameInput = page.getByLabel("First name:");
     this.lastnameInput = page.getByLabel("Last name:");
@@ -28,7 +26,7 @@ constructor(page:Page){
     this.registrationResult = page.locator(".result");
 }
 async navigattoRegisterlink(){
-    await this.registerlink.click();
+    await this.navigateTo("/register");
 }
 async checktheradiobutton(){
     await this.radiobutton.check();
@@ -46,7 +44,6 @@ async eneterthedetails(FirstName:string, LastName:string, email:string, password
     await this.enterText(this.passwordInput,password);
     await this.enterText(this.confirmpasswordInput,confirmpassword);
     await this.clickElement(this.registerbutton);
-    
 }
 async verifylogoutbuttonisvisible(){
     await expect(this.logoutbutton).toBeVisible();
