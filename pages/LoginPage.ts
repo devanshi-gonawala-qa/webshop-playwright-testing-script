@@ -8,7 +8,6 @@ class LoginPage extends BasePage {
     private readonly loginButton:Locator;
     private readonly logoutButton:Locator;
     private readonly errorMessage: Locator;
-    private readonly errorMessageInValidUsername: Locator;
     
 
     constructor(page:Page){
@@ -19,7 +18,6 @@ class LoginPage extends BasePage {
         this.loginButton = page.getByRole("button", {name : 'Log in'});
         this.logoutButton = page.getByText("Log out");
         this.errorMessage=page.locator('[class="validation-summary-errors"]');
-        this.errorMessageInValidUsername=page.locator('[class="field-validation-error"]');
     }
 async navigateToLoginPage(){
     await this.loginLink.click();
@@ -32,26 +30,20 @@ async enterLoginCredentials(email:string,password:string){
     await this.enterText(this.passwordInput, password);
     await this.clickElement(this.loginButton);
 }
-async verifyLoginOutcome(errorMessage: string) {
-        switch (errorMessage.toLowerCase()) {
-            case "valid standard user":
-                // Expected: Success
-                await expect(this.logoutButton).toBeVisible();
-                break;
-            case "wrong username":
-                await expect(this.errorMessageInValidUsername).toContainText(
-                "Please enter a valid email address.");
-                break;
-            case "empty username":
-                  await expect(this.errorMessage).toContainText("Login was unsuccessful. Please correct the errors and try again.");
-                  await expect(this.errorMessage).toContainText("No customer account found");
-                break;
-            case "empty password":
-                await expect(this.errorMessage).toContainText("Login was unsuccessful. Please correct the errors and try again.");
-                await expect(this.errorMessage).toContainText("The credentials provided are incorrect");
-                break;
-            default:
-                throw new Error(`Unknown login scenario: ${errorMessage}`);
+async verifyLoginOutcome(expectedResult: string) {
+        if (expectedResult.toLowerCase() === "success") {
+            await expect(this.logoutButton).toBeVisible();
+            return;
+        }
+
+        // Expected error messages are pipe-separated in the workbook and asserted individually.
+        const expectedMessages = expectedResult.split("|").filter(message => message.trim() !== "");
+        if (expectedMessages.length === 0) {
+            throw new Error("Login scenario must define an expected result.");
+        }
+
+        for (const message of expectedMessages) {
+            await expect(this.errorMessage).toContainText(message);
         }
     }
 }

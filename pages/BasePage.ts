@@ -13,7 +13,7 @@ class BasePage{
     // Click element
     async clickElement(locator: Locator) {
         await locator.click();
-    }
+        }
 
     // Enter text
     async enterText(locator: Locator, text: string) {

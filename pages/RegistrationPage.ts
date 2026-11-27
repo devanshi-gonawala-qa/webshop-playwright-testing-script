@@ -1,7 +1,6 @@
 import { expect, Locator, Page } from "@playwright/test";
 import { BasePage } from "./BasePage";
 class RegistrationPage extends BasePage {
-    private readonly radiobutton:Locator;
     private readonly firstnameInput:Locator;
     private readonly lastnameInput: Locator;
     private readonly emailInput:Locator;
@@ -14,7 +13,6 @@ class RegistrationPage extends BasePage {
 
 constructor(page:Page){
     super(page);
-    this.radiobutton = page.getByRole("radio", {name: "Male",exact: true});
     this.firstnameInput = page.getByLabel("First name:");
     this.lastnameInput = page.getByLabel("Last name:");
     this.emailInput = page.getByLabel("Email:");
@@ -26,10 +24,12 @@ constructor(page:Page){
     this.registrationResult = page.locator(".result");
 }
 async navigattoRegisterlink(){
+    // Use the route directly instead of depending on the home-page navigation link.
     await this.navigateTo("/register");
 }
-async checktheradiobutton(){
-    await this.radiobutton.check();
+async selectGender(gender: string){
+    // The worksheet supplies the gender, so this flow supports either radio option.
+    await this.page.getByRole("radio", {name: gender, exact: true}).check();
 }
 async eneterthedetails(FirstName:string, LastName:string, email:string, password:string, confirmpassword:string){
     /*await this.firstnameInput.fill(FirstName);
@@ -55,6 +55,7 @@ async verifyRegistrationOutcome(expectedResult: string){
         return;
     }
 
+    // Validation messages use the same pipe-separated format as the workbook.
     const expectedMessages = expectedResult.split("|");
     await expect(this.validationMessages).toContainText(expectedMessages);
 }

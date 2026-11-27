@@ -1,13 +1,12 @@
 export const FrameworkConstants = {
-    //test data file path
-        
+    // Both suites share this workbook, with test cases kept on separate sheets.
     TESTDATA_Folder : './test-data',
 
     Excel_files: 
     {
-        LoginTestData: 'LoginTestData.xlsx', 
-        RegistrationTestData: 'RegistrationTestData.xlsx',
+        TestData: 'WebshopTestData.xlsx',
     },
+    // These values must match the worksheet tab names in the workbook.
     Sheet_names: 
     {
         LoginSheet : 'LoginData',

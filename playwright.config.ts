@@ -7,6 +7,7 @@ export default defineConfig({
   outputDir: './test-results',
   fullyParallel: true,
   retries: isCI ? 2 : 0,
+  // Jenkins runs one worker to avoid parallel requests against the shared demo site.
   workers: isCI ? 1 : undefined,
   reporter: [
     ['list'],
