@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from "@playwright/test";
-import { BasePage } from "./Basepage";
+import { BasePage } from "./BasePage";
 
 class LoginPage extends BasePage {
     private readonly loginLink: Locator;

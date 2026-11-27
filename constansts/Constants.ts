@@ -6,11 +6,11 @@ export const FrameworkConstants = {
     Excel_files: 
     {
         LoginTestData: 'LoginTestData.xlsx', 
-        //registerTestData : 'RegisterTestData.xlsx
+        RegistrationTestData: 'RegistrationTestData.xlsx',
     },
     Sheet_names: 
     {
         LoginSheet : 'LoginData',
-        // RegisterSheet : 'Register'
+        RegistrationSheet: 'RegistrationData',
     }
 }

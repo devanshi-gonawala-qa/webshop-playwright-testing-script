@@ -1,11 +1,35 @@
-// import {test, expect} from '@playwright/test';
-import {test, expect} from '../Fixtures/fixture'
-import { RegistrationPage } from '../pages/RegistrationPage';
-test("Verify registaration functionality" , async({registrationpage}) => {
+import { test } from '../Fixtures/fixture';
+import { FrameworkConstants } from '../constansts/Constants';
+import { ExcelReader } from '../utils/ExcelReader';
 
-    // const registrationpagee = new RegistrationPage(page);
-    await registrationpage.navigattoRegisterlink();
-    await registrationpage.checktheradiobutton();
-    await registrationpage.eneterthedetails("Kunj7812", "Patel", "Kunj7812@gmail.com", "987654124", "987654124");
-    await registrationpage.verifylogoutbuttonisvisible();
+const registrationData = ExcelReader.readExcelFile(
+    `${FrameworkConstants.TESTDATA_Folder}/${FrameworkConstants.Excel_files.RegistrationTestData}`,
+    FrameworkConstants.Sheet_names.RegistrationSheet
+);
+const scenarios = registrationData.slice(1).filter(row =>
+    row.some(value => value !== undefined && value !== null && String(value).trim() !== '')
+);
+
+test.describe('Registration Functionality', () => {
+    scenarios.forEach((row, index) => {
+        const [scenario, gender, firstName, lastName, email, password, confirmPassword, expectedResult] =
+            row.map(value => String(value ?? ''));
+
+        test(`Registration ${index + 1} - ${scenario}`, async ({ registrationpage }) => {
+            await registrationpage.navigattoRegisterlink();
+            if (gender.toLowerCase() === 'male') {
+                await registrationpage.checktheradiobutton();
+            }
+
+            const uniqueEmail = email.replace('{timestamp}', `${Date.now()}-${index}`);
+            await registrationpage.eneterthedetails(
+                firstName,
+                lastName,
+                uniqueEmail,
+                password,
+                confirmPassword
+            );
+            await registrationpage.verifyRegistrationOutcome(expectedResult);
+        });
+    });
 });

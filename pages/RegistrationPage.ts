@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from "@playwright/test";
-import { BasePage } from "./Basepage";
+import { BasePage } from "./BasePage";
 class RegistrationPage extends BasePage {
     private readonly registerlink: Locator;
     private readonly radiobutton:Locator;
@@ -10,6 +10,8 @@ class RegistrationPage extends BasePage {
     private readonly confirmpasswordInput:Locator;
     private readonly registerbutton :Locator;
     private readonly logoutbutton:Locator;
+    private readonly validationMessages: Locator;
+    private readonly registrationResult: Locator;
 
 constructor(page:Page){
     super(page);
@@ -22,6 +24,8 @@ constructor(page:Page){
     this.confirmpasswordInput = page.getByLabel("Confirm password:", {exact:true});
     this.registerbutton = page.locator("#register-button");
     this.logoutbutton = page.getByText("Log out");
+    this.validationMessages = page.locator(".field-validation-error");
+    this.registrationResult = page.locator(".result");
 }
 async navigattoRegisterlink(){
     await this.registerlink.click();
@@ -43,10 +47,19 @@ async eneterthedetails(FirstName:string, LastName:string, email:string, password
     await this.enterText(this.confirmpasswordInput,confirmpassword);
     await this.clickElement(this.registerbutton);
     
-    
 }
 async verifylogoutbuttonisvisible(){
     await expect(this.logoutbutton).toBeVisible();
+}
+async verifyRegistrationOutcome(expectedResult: string){
+    if(expectedResult.toLowerCase() === "success"){
+        await expect(this.registrationResult).toContainText("Your registration completed");
+        await this.verifylogoutbuttonisvisible();
+        return;
+    }
+
+    const expectedMessages = expectedResult.split("|");
+    await expect(this.validationMessages).toContainText(expectedMessages);
 }
 }
 export{RegistrationPage}
